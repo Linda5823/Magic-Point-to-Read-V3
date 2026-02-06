@@ -172,7 +172,7 @@ const App: React.FC = () => {
   }, [status]);
 
   return (
-    <div className={`min-h-screen flex flex-col items-center py-6 md:py-10 px-4 ${(activeBlock || isFullMode) ? 'pb-[28rem] md:pb-[24rem]' : 'pb-8'}`}>
+    <div className="min-h-screen flex flex-col items-center py-6 md:py-10 px-4 pb-8">
       <header className="max-w-4xl w-full text-center mb-6 md:mb-8">
         <h1 className="text-3xl md:text-5xl font-extrabold mb-2 tracking-tight flex flex-col items-center gap-2">
           <div className="flex items-center gap-3 flex-nowrap">
@@ -303,13 +303,12 @@ const App: React.FC = () => {
             </div>
           )}
         </div>
-      </main>
 
-      {/* Translation Panel */}
-      {(activeBlock || isFullMode) && (
-        <div className="fixed bottom-4 left-3 right-3 md:left-1/2 md:right-auto md:-translate-x-1/2 md:max-w-3xl md:w-full z-50">
-          <div className="bg-white/95 backdrop-blur-md rounded-2xl md:rounded-3xl shadow-xl shadow-slate-300/30 border border-slate-200/80">
-            <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-slate-100">
+        {/* Translation Panel - 文档流，图片区下方 */}
+        {(activeBlock || isFullMode) && (
+          <div className="w-full max-w-4xl mt-6">
+            <div className="bg-white/95 backdrop-blur-md rounded-2xl md:rounded-3xl shadow-xl shadow-slate-300/30 border border-slate-200/80">
+              <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-slate-100">
               
               {/* Source Column */}
               <div className="flex-1 p-6 md:p-10 flex flex-col max-h-64 md:max-h-[30rem] overflow-y-auto">
@@ -376,11 +375,11 @@ const App: React.FC = () => {
                   </p>
                 )}
               </div>
-
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </main>
     </div>
   );
 };
