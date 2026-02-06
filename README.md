@@ -10,7 +10,7 @@ An AI reading assistant that turns any image into an interactive "Point-to-Read"
 
 - **🎯 Interactive OCR**: Touch text blocks directly on the image.
 - **🌐 Smart Translation**: 
-  - Supports English, Chinese, Japanese, Spanish, French, and Korean.
+  - Supports English, Chinese, Japanese, Spanish, French, Korean, Arabic, Thai, Vietnamese, Latin, and Italian.
   - **Intermediate Pivoting**: Uses English as an intermediate step to ensure the highest translation quality from any source language.
 - **🎙️ AI Neural Speech**: Uses Gemini 2.5 Flash TTS for human-like pronunciation in all supported languages.
 - **📸 Mobile First**: Optimized for taking photos of books and immediate interaction.
