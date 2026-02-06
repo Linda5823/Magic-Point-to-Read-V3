@@ -55,7 +55,7 @@ const PointReader: React.FC<PointReaderProps> = ({ imageUrl, blocks, onTextClick
   return (
     <div 
       ref={containerRef} 
-      className="relative inline-block overflow-hidden rounded-xl shadow-2xl bg-white cursor-crosshair group"
+      className="relative inline-block overflow-hidden rounded-xl shadow-lg border border-slate-100 bg-white cursor-crosshair group"
       onClick={handleClick}
     >
       <img
