@@ -7,8 +7,8 @@ const REASONING_MODEL = 'gemini-3-flash-preview';
 const TTS_MODEL = 'gemini-2.5-flash-preview-tts';
 
 const getAIClient = () => {
-  // Use VITE_ prefix for client-side Vite apps, or fallback to process.env for Node/Vercel
-  const apiKey = (import.meta as any).env?.VITE_API_KEY || process.env?.API_KEY;
+  // Use VITE_ prefix for client-side Vite apps
+  const apiKey = (import.meta.env as any).VITE_API_KEY || (import.meta.env as any).VITE_GEMINI_API_KEY;
   
   if (!apiKey) {
     throw new Error("API_KEY_MISSING: API Key is not configured. Please check your environment variables.");
@@ -110,9 +110,10 @@ export const generateSpeech = async (text: string): Promise<ArrayBuffer> => {
       },
     });
 
-    const audioPart = response.candidates?.[0]?.content?.parts.find(p => p.inlineData?.data);
+    const audioPart = response.candidates?.[0]?.content?.parts.find((p: any) => p.inlineData?.data);
     if (audioPart?.inlineData) {
-      return decodeBase64(audioPart.inlineData.data);
+      const uint8Array = decodeBase64(audioPart.inlineData.data);
+      return uint8Array.buffer.slice(uint8Array.byteOffset, uint8Array.byteOffset + uint8Array.byteLength) as ArrayBuffer;
     }
     throw new Error("TTS response contained no audio data.");
   } catch (error: any) {
