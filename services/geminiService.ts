@@ -64,7 +64,7 @@ export const translateWithPivot = async (text: string, targetLangCode: LanguageC
   if (targetLangCode === 'none') return text;
   const ai = getAIClient();
   
-  const targetLang = SUPPORTED_LANGUAGES.find(l => l.code === targetLangCode)?.name.split(' / ')[0] || 'English';
+  const targetLang = SUPPORTED_LANGUAGES.find(l => l.code === targetLangCode)?.name.split('/')[1]?.trim() || 'English';
 
   try {
     const response = await ai.models.generateContent({
@@ -110,10 +110,13 @@ export const generateSpeech = async (text: string): Promise<ArrayBuffer> => {
       },
     });
 
-    const audioPart = response.candidates?.[0]?.content?.parts.find((p: any) => p.inlineData?.data);
-    if (audioPart?.inlineData) {
-      const uint8Array = decodeBase64(audioPart.inlineData.data);
-      return uint8Array.buffer.slice(uint8Array.byteOffset, uint8Array.byteOffset + uint8Array.byteLength) as ArrayBuffer;
+    const audioPart = response.candidates?.[0]?.content?.parts?.find((p: any) => p.inlineData?.data);
+    const audioData = audioPart?.inlineData?.data;
+    if (audioData) {
+      const uint8Array = decodeBase64(audioData);
+      const arrayBuffer = new ArrayBuffer(uint8Array.length);
+      new Uint8Array(arrayBuffer).set(uint8Array);
+      return arrayBuffer;
     }
     throw new Error("TTS response contained no audio data.");
   } catch (error: any) {
