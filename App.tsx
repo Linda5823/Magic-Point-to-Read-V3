@@ -11,7 +11,7 @@ const App: React.FC = () => {
   const [activeBlock, setActiveBlock] = useState<TextBlock | null>(null);
   const [translatedText, setTranslatedText] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [targetLang, setTargetLang] = useState<LanguageCode>('zh'); 
+  const [targetLang, setTargetLang] = useState<LanguageCode>('none'); 
   
   const audioContextRef = useRef<AudioContext | null>(null);
   const currentSourceRef = useRef<AudioBufferSourceNode | null>(null);
@@ -22,6 +22,7 @@ const App: React.FC = () => {
     if (activeBlock && targetLang !== 'none') {
       const reTranslate = async () => {
         try {
+          setError(null); // 清除之前的错误
           setStatus(AppStatus.TRANSLATING);
           const result = await translateWithPivot(activeBlock.text, targetLang);
           setTranslatedText(result);
@@ -34,6 +35,7 @@ const App: React.FC = () => {
       reTranslate();
     } else if (targetLang === 'none') {
       setTranslatedText(null);
+      setError(null); // 清除错误
     }
   }, [targetLang, activeBlock?.text]);
 
@@ -86,8 +88,16 @@ const App: React.FC = () => {
       audioCache.current.set(text, audioBuffer);
       playAudio(audioBuffer);
     } catch (err: any) {
-      setError("Audio playback error: " + err.message);
-      setStatus(AppStatus.READY);
+      // TTS 错误不应该阻止其他功能，只显示警告
+      const errorMsg = err.message || "Audio playback error";
+      // 如果是 TTS 相关的错误，不设置为主要错误，只在控制台记录
+      if (errorMsg.includes('TTS') || errorMsg.includes('audio')) {
+        console.warn("TTS Error:", errorMsg);
+        setStatus(AppStatus.READY);
+      } else {
+        setError("Audio playback error: " + errorMsg);
+        setStatus(AppStatus.READY);
+      }
     }
   };
 
@@ -141,18 +151,19 @@ const App: React.FC = () => {
   }, [status, targetLang]);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center py-6 md:py-10 px-4 pb-[32rem]">
+    <div className={`min-h-screen bg-slate-50 flex flex-col items-center py-6 md:py-10 px-4 ${activeBlock ? 'pb-[28rem] md:pb-[24rem]' : 'pb-8'}`}>
       <header className="max-w-4xl w-full text-center mb-8">
         <h1 className="text-3xl md:text-5xl font-extrabold text-slate-800 mb-3 tracking-tight flex flex-col items-center gap-2">
-          <div className="flex items-center gap-3">
-            <span className="bg-clip-text text-transparent bg-gradient-to-br from-blue-600 to-indigo-600">Magic Point-to-Read</span>
-            <span className="text-3xl animate-bounce">🪄</span>
+          <div className="flex items-center gap-3 flex-nowrap">
+            <span className="bg-clip-text text-transparent bg-gradient-to-br from-blue-600 to-indigo-600 whitespace-nowrap">Magic Point-to-Read</span>
+            <span className="text-3xl animate-bounce flex-shrink-0">🪄</span>
           </div>
           <span className="text-xl md:text-2xl font-black text-slate-400/50 uppercase tracking-[0.3em] mt-1">魔法点读笔</span>
         </h1>
-        <p className="text-slate-500 font-medium px-4 text-sm md:text-base">
-          Click on text to hear it. Translate instantly to any language.
-        </p>
+        <div className="text-slate-500 font-medium px-4 text-sm md:text-base flex flex-col items-center gap-1">
+          <p>Upload any reading material and click on text to hear it spoken or translated.</p>
+          <p className="text-xs md:text-sm">上传图片，点击文字，Gemini 为你朗读和翻译</p>
+        </div>
       </header>
 
       <main className="max-w-4xl w-full flex flex-col items-center">
@@ -166,7 +177,13 @@ const App: React.FC = () => {
               <label className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-black py-5 px-12 rounded-3xl transition-all shadow-2xl shadow-blue-200 active:scale-95 text-lg md:text-xl tracking-wide flex flex-col items-center group text-center ring-4 ring-transparent hover:ring-blue-100">
                 <span>Snap Photo / Upload</span>
                 <span className="text-sm text-blue-200 font-normal mt-1">拍摄或从相册选择图片</span>
-                <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} />
+                <input 
+                  type="file" 
+                  className="hidden" 
+                  accept="image/*" 
+                  capture="environment"
+                  onChange={handleFileUpload}
+                />
               </label>
               <div className="mt-12 opacity-30">
                 <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-800">Powered by Gemini AI Vision & TTS</p>
@@ -182,7 +199,7 @@ const App: React.FC = () => {
                   <span className={`w-1.5 h-1.5 rounded-full ${status === AppStatus.ANALYZING ? 'bg-white' : 'bg-slate-400'}`}></span>
                   {status}
                 </div>
-                <button onClick={() => { setImageUrl(null); setBlocks([]); setStatus(AppStatus.IDLE); setTranslatedText(null); setActiveBlock(null); }} className="text-slate-300 hover:text-red-500 transition-colors p-2 hover:bg-red-50 rounded-full">
+                <button onClick={() => { setImageUrl(null); setBlocks([]); setStatus(AppStatus.IDLE); setTranslatedText(null); setActiveBlock(null); setTargetLang('none'); }} className="text-slate-300 hover:text-red-500 transition-colors p-2 hover:bg-red-50 rounded-full">
                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
               </div>
@@ -202,7 +219,7 @@ const App: React.FC = () => {
 
       {/* GOOGLE TRANSLATE STYLE DASHBOARD */}
       {activeBlock && (
-        <div className="fixed bottom-8 left-4 right-4 max-w-5xl mx-auto z-50 animate-in slide-in-from-bottom-12 duration-500 ease-out">
+        <div className="fixed bottom-4 left-4 right-4 max-w-5xl mx-auto z-50 animate-in slide-in-from-bottom-12 duration-500 ease-out">
           <div className="bg-white rounded-[2.5rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.3)] border border-slate-100 overflow-hidden ring-1 ring-slate-900/5">
             <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-slate-100">
               
@@ -214,7 +231,11 @@ const App: React.FC = () => {
                     <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Original Text / 原文</span>
                   </div>
                   <button 
-                    onClick={() => playSpeech(activeBlock.text)}
+                    onClick={async () => {
+                      // 清除之前的错误，然后播放
+                      setError(null);
+                      await playSpeech(activeBlock.text);
+                    }}
                     className="w-12 h-12 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all active:scale-90 shadow-sm"
                   >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
@@ -252,7 +273,11 @@ const App: React.FC = () => {
 
                   {translatedText && (
                     <button 
-                      onClick={() => playSpeech(translatedText)}
+                      onClick={async () => {
+                        // 清除之前的错误，然后播放
+                        setError(null);
+                        await playSpeech(translatedText);
+                      }}
                       className={`w-12 h-12 rounded-full flex items-center justify-center transition-all active:scale-90 shadow-lg ${
                         status === AppStatus.SPEAKING ? 'bg-blue-600 text-white animate-pulse' : 'bg-white text-blue-600 hover:bg-blue-600 hover:text-white border border-blue-100'
                       }`}

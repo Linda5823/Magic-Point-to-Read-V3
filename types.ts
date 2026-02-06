@@ -31,6 +31,11 @@ export const SUPPORTED_LANGUAGES = [
   { code: 'fr', name: 'French / 法语' },
   { code: 'de', name: 'German / 德语' },
   { code: 'ru', name: 'Russian / 俄语' },
+  { code: 'ar', name: 'Arabic / 阿拉伯语' },
+  { code: 'th', name: 'Thai / 泰语' },
+  { code: 'vi', name: 'Vietnamese / 越南语' },
+  { code: 'la', name: 'Latin / 拉丁语' },
+  { code: 'it', name: 'Italian / 意大利语' },
 ];
 
-export type LanguageCode = 'none' | 'zh' | 'en' | 'ja' | 'ko' | 'es' | 'fr' | 'de' | 'ru';
+export type LanguageCode = 'none' | 'zh' | 'en' | 'ja' | 'ko' | 'es' | 'fr' | 'de' | 'ru' | 'ar' | 'th' | 'vi' | 'la' | 'it';
