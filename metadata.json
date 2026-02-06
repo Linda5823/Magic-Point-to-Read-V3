@@ -1,0 +1,8 @@
+
+{
+  "name": "Magic Point-to-Read",
+  "description": "An interactive reading assistant that lets you upload an image or take a photo to hear text spoken aloud using Gemini's advanced OCR and TTS capabilities.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
