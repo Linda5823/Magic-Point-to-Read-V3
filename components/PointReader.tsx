@@ -55,7 +55,7 @@ const PointReader: React.FC<PointReaderProps> = ({ imageUrl, blocks, onTextClick
   return (
     <div 
       ref={containerRef} 
-      className="relative inline-block overflow-hidden rounded-xl shadow-lg border border-slate-100 bg-white cursor-crosshair group"
+      className="relative w-full max-w-4xl overflow-hidden rounded-xl shadow-lg border border-slate-100 bg-white cursor-crosshair group"
       onClick={handleClick}
     >
       <img
@@ -63,7 +63,7 @@ const PointReader: React.FC<PointReaderProps> = ({ imageUrl, blocks, onTextClick
         src={imageUrl}
         onLoad={handleImageLoad}
         alt="Upload target"
-        className={`max-w-full h-auto block transition-filter duration-500 ${isAnalyzing ? 'blur-[2px] grayscale-[30%]' : ''}`}
+        className={`w-full h-auto max-h-[60vh] md:max-h-[70vh] block object-contain transition-filter duration-500 ${isAnalyzing ? 'blur-[2px] grayscale-[30%]' : ''}`}
       />
       
       {/* 扫描动画层 */}

@@ -28,6 +28,7 @@ const App: React.FC = () => {
   const audioContextRef = useRef<AudioContext | null>(null);
   const currentSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const audioCache = useRef<Map<string, AudioBuffer>>(new Map());
+  const changeImageInputRef = useRef<HTMLInputElement | null>(null);
 
   // 智能重组算法：利用坐标还原阅读顺序
   const fullOriginalText = useMemo(() => {
@@ -219,16 +220,8 @@ const App: React.FC = () => {
             <div className="flex flex-col items-center">
               <div className="flex justify-center w-full px-4 md:px-6 mb-4">
                 <div className="inline-flex items-center rounded-full border border-slate-200 bg-white/95 shadow-lg overflow-hidden">
-                  <div className={`px-4 py-2.5 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider ${
-                    status === AppStatus.ANALYZING ? 'bg-indigo-500 text-white animate-pulse' : 
-                    'bg-slate-50 text-slate-500'
-                  }`}>
-                    <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${status === AppStatus.ANALYZING ? 'bg-white' : 'bg-slate-400'}`}></span>
-                    {STATUS_LABELS[status]}
-                  </div>
                   {imageUrl && blocks.length > 0 && status !== AppStatus.ANALYZING && (
                     <>
-                      <div className="w-px h-5 bg-slate-200" aria-hidden />
                       <button
                         type="button"
                         onClick={async () => {
@@ -249,9 +242,29 @@ const App: React.FC = () => {
                           isFullMode ? 'bg-blue-600 text-white' : 'text-slate-700 hover:bg-slate-50'
                         }`}
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-                        READ FULL / 全文模式
+                        <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                        <span className="flex flex-col items-start leading-tight text-left"><span>READ FULL</span><span className="text-[10px] font-medium normal-case">{isFullMode ? '全文模式已开启' : '全文模式'}</span></span>
                       </button>
+                      <div className="w-px h-5 bg-slate-200" aria-hidden />
+                    </>
+                  )}
+                  {imageUrl && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => changeImageInputRef.current?.click()}
+                        className="flex items-center gap-2 px-5 py-2.5 font-semibold text-xs uppercase tracking-wider text-slate-700 hover:bg-slate-50 transition-all"
+                      >
+                        <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        <span className="flex flex-col items-start leading-tight text-left"><span>CHANGE IMAGE</span><span className="text-[10px] font-medium normal-case">更换图片</span></span>
+                      </button>
+                      <input
+                        ref={changeImageInputRef}
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                      />
                     </>
                   )}
                 </div>
@@ -264,8 +277,28 @@ const App: React.FC = () => {
                 </div>
               )}
 
-              <div className="relative w-full flex justify-center">
+              <div className="relative w-full flex justify-center px-2 md:px-4">
                 <PointReader imageUrl={imageUrl} blocks={blocks} onTextClick={handleTextClick} activeBlock={activeBlock} isAnalyzing={status === AppStatus.ANALYZING} />
+              </div>
+
+              {/* 进度条：图片下方 */}
+              <div className="w-full max-w-md mx-auto mt-4 px-4">
+                <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      status === AppStatus.ANALYZING || status === AppStatus.UPLOADING
+                        ? 'w-3/4 bg-indigo-500 animate-pulse'
+                        : status === AppStatus.READY || status === AppStatus.SPEAKING || status === AppStatus.TRANSLATING
+                        ? 'w-full bg-indigo-500'
+                        : status === AppStatus.ERROR
+                        ? 'w-full bg-rose-500'
+                        : 'w-0 bg-slate-300'
+                    }`}
+                  />
+                </div>
+                <p className="text-[10px] text-slate-500 mt-1.5 text-center font-medium uppercase tracking-wider">
+                  {STATUS_LABELS[status]}
+                </p>
               </div>
             </div>
           )}
