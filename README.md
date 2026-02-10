@@ -1,7 +1,6 @@
 
 # 🪄 Magic Point-to-Read | 魔法点读笔
 
-[![Powered by Gemini](https://img.shields.io/badge/Powered%20by-Gemini%20AI-blue.svg)](https://ai.google.dev/)
 [![Mobile Friendly](https://img.shields.io/badge/Mobile-Friendly-green.svg)](#)
 
 An AI reading assistant that turns any image into an interactive "Point-to-Read" material. Now featuring a **Google Translate-inspired interface** and high-fidelity AI speech.
@@ -24,3 +23,11 @@ An AI reading assistant that turns any image into an interactive "Point-to-Read"
 
 ---
 Created for modern, AI-native learning. #GeminiAPI #EducationTech
+
+## 📄 License & Copyright
+
+Copyright © 2026 Magic Point-to-Read. All rights reserved.
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+**Disclaimer**: This project uses Google Gemini AI API. Please ensure you comply with Google's API Terms of Service when using this application.

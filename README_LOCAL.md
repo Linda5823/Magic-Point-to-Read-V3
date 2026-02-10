@@ -1,6 +1,5 @@
 # 📖 Local Testing Guide | 本地测试指南
 
-[![Powered by Gemini](https://img.shields.io/badge/Powered%20by-Gemini%20AI-blue.svg)](https://ai.google.dev/)
 
 A step-by-step guide to set up and run the Magic Point-to-Read project locally on your machine.
 
@@ -105,3 +104,17 @@ If port 3000 is already in use, Vite will automatically try the next available p
 ---
 
 Happy coding! | 编码愉快！ 🎉
+
+## 📄 License & Copyright | 许可证与版权
+
+Copyright © 2026 Magic Point-to-Read. All rights reserved.
+
+版权所有 © 2026 Magic Point-to-Read。保留所有权利。
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+本项目采用 MIT 许可证 - 详情请参阅 LICENSE 文件。
+
+**Disclaimer**: This project uses Google Gemini AI API. Please ensure you comply with Google's API Terms of Service when using this application.
+
+**免责声明**：本项目使用 Google Gemini AI API。使用本应用时，请确保遵守 Google 的 API 服务条款。
